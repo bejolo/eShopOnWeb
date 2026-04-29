@@ -11,7 +11,7 @@ resources:
         enabled: true
 
 variables:
-  serviceConnection: wi-az400-dev
+  serviceConnection: svc-conn-lab08
   devWebAppName: RGATES173587816-DevTest
   prodWebAppName: RGATES173587816-Prod
   appSettings: "-UseOnlyInMemoryDatabase true -ASPNETCORE_ENVIRONMENT Development"
