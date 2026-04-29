@@ -1,0 +1,62 @@
+name: "eshoponweb-cd"
+
+trigger: none
+pr: none
+
+resources:
+  pipelines:
+    - pipeline: eshoponweb-ci
+      source: eshoponweb-ci
+      trigger:
+        enabled: true
+
+variables:
+  serviceConnection: wi-az400-dev
+  devWebAppName: RGATES173587816-DevTest
+  prodWebAppName: RGATES173587816-Prod
+  appSettings: "-UseOnlyInMemoryDatabase true -ASPNETCORE_ENVIRONMENT Development"
+
+pool:
+  vmImage: "windows-latest"
+
+stages:
+  - stage: DevTest
+    displayName: DevTest
+    jobs:
+      - deployment: DeployDevTest
+        displayName: Deploy to DevTest Web App
+        environment: eshoponweb-devtest
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureRmWebAppDeployment@4
+                  displayName: "Deploy Azure App Service: $(devWebAppName)"
+                  inputs:
+                    ConnectionType: AzureRM
+                    azureSubscription: $(serviceConnection)
+                    appType: webApp
+                    WebAppName: $(devWebAppName)
+                    Package: "$(System.DefaultWorkingDirectory)/**/Web.zip"
+                    AppSettings: $(appSettings)
+
+  - stage: Production
+    displayName: Production
+    dependsOn: DevTest
+    jobs:
+      - deployment: DeployProduction
+        displayName: Deploy to Production Web App
+        environment: eshoponweb-production
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureRmWebAppDeployment@4
+                  displayName: "Deploy Azure App Service: $(prodWebAppName)"
+                  inputs:
+                    ConnectionType: AzureRM
+                    azureSubscription: $(serviceConnection)
+                    appType: webApp
+                    WebAppName: $(prodWebAppName)
+                    Package: "$(System.DefaultWorkingDirectory)/**/Web.zip"
+                    AppSettings: $(appSettings)
