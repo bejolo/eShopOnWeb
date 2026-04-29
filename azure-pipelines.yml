@@ -37,7 +37,7 @@ stages:
                     azureSubscription: $(serviceConnection)
                     appType: webApp
                     WebAppName: $(devWebAppName)
-                    Package: "$(System.DefaultWorkingDirectory)/**/Web.zip"
+                    Package: "$(Pipeline.Workspace)/eshoponweb-ci/**/Web.zip"
                     AppSettings: $(appSettings)
 
   - stage: Production
@@ -58,5 +58,5 @@ stages:
                     azureSubscription: $(serviceConnection)
                     appType: webApp
                     WebAppName: $(prodWebAppName)
-                    Package: "$(System.DefaultWorkingDirectory)/**/Web.zip"
+                    Package: "$(Pipeline.Workspace)/eshoponweb-ci/**/Web.zip"
                     AppSettings: $(appSettings)
